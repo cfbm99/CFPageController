@@ -114,7 +114,7 @@ class CFPageController: UIViewController {
 extension CFPageController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
+        menuView.sliderMenu(by: scrollView.contentOffset.x / scrollView.frame.width)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {

@@ -48,7 +48,12 @@ class CFMenuView: UIView {
     }
     
     public func sliderMenu(by progress: CGFloat) {
-        
+        let tag = Int(progress)
+        let rate = progress - CGFloat(tag)
+        let currentItem = menuItems[tag]
+        let nextItem = menuItems[tag + 1]
+        currentItem.rate = 1 - rate
+        nextItem.rate = rate
     }
     
     //private funcs

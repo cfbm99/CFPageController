@@ -16,15 +16,22 @@ protocol CFMenuViewItemDelegate: NSObjectProtocol {
 class CFMenuViewItem: UILabel {
 
     //private vars
-    fileprivate let normalFont: CGFloat = 17.0
-    fileprivate let selectedFont: CGFloat = 20.0
+    fileprivate let normalFont: CGFloat = 15.0
+    fileprivate let selectedFont: CGFloat = 18.0
     
     //public vars
     weak var delegate: CFMenuViewItemDelegate?
     public var selected: Bool = false {
         didSet {
+           rate = selected ? 1 : 0
+        }
+    }
+    
+    public var rate: CGFloat = 0 {
+        didSet {
             let scale = selectedFont / normalFont
-            transform = selected ? CGAffineTransform.init(scaleX: scale, y: scale) : CGAffineTransform.identity
+            let rateScale = rate * (scale - 1) + 1
+            transform = CGAffineTransform.init(scaleX: rateScale, y: rateScale)
         }
     }
     
@@ -41,6 +48,7 @@ class CFMenuViewItem: UILabel {
     
     //private funcs
     fileprivate func setup() {
+        font = UIFont.systemFont(ofSize: normalFont)
         textAlignment = .center
         backgroundColor = .clear
         isUserInteractionEnabled = true
