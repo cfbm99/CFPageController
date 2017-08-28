@@ -17,20 +17,23 @@ class CFMenuViewItem: UILabel {
 
     //private vars
     fileprivate let normalFont: CGFloat = 15.0
-    fileprivate let selectedFont: CGFloat = 18.0
-    
-    //public vars
-    weak var delegate: CFMenuViewItemDelegate?
-    public var selected: Bool = false {
+    fileprivate let selectedFont: CGFloat = 17.0
+    fileprivate var isSelected: Bool = false {
         didSet {
-           rate = selected ? 1 : 0
+            rate = isSelected ? 1 : 0
         }
     }
     
+    //public vars
+    weak var delegate: CFMenuViewItemDelegate?
     public var rate: CGFloat = 0 {
         didSet {
-            let scale = selectedFont / normalFont
-            let rateScale = rate * (scale - 1) + 1
+            let red: CGFloat = rate * 236.0 / 256.0
+            let green: CGFloat = rate * 60.0 / 256.0
+            let blue: CGFloat = rate * 26.0 / 256.0
+            textColor = UIColor.init(red: red, green: green, blue: blue, alpha: 1)
+            let scale = (selectedFont - normalFont) / normalFont
+            let rateScale = rate * scale + 1
             transform = CGAffineTransform.init(scaleX: rateScale, y: rateScale)
         }
     }
@@ -59,9 +62,13 @@ class CFMenuViewItem: UILabel {
     }
     
     //public funcs
-    public func selectWithAnimation(select: Bool) {
-        UIView.animate(withDuration: 0.3) { 
-            self.selected = select
+    public func setMenuItemSelectionState(isSelected: Bool, animated: Bool) {
+        if animated {
+            UIView.animate(withDuration: 0.3) {
+                self.isSelected = isSelected
+            }
+        } else {
+            self.isSelected = isSelected
         }
     }
     

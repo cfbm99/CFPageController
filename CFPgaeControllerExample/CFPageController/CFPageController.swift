@@ -114,12 +114,19 @@ class CFPageController: UIViewController {
 extension CFPageController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        menuView.sliderMenu(by: scrollView.contentOffset.x / scrollView.frame.width)
+        if scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.frame.width) == 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - scrollView.frame.width) || scrollView.contentOffset.x < 0 {
+            return
+        }
+        let progress = scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.frame.width) / scrollView.frame.width
+        let translationX = scrollView.panGestureRecognizer.translation(in: scrollView).x
+        let index = Int(scrollView.contentOffset.x / scrollView.frame.width)
+        menuView.sliderMenu(by: progress, index: index, translationX: translationX)
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         selectedIndex = Int(scrollView.contentOffset.x / scrollView.bounds.width)
         addViewControllerAtIndex(selectedIndex)
+        menuView.refreshContentOffsetByEndDecelerating(with: selectedIndex)
     }
     
 }

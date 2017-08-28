@@ -29,10 +29,15 @@ class CFMenuView: UIView {
         return mark
     }()
     
+    fileprivate lazy var shadow: UIView = {
+        let shadow = UIView()
+        shadow.backgroundColor = UIColor.init(white: 0.85, alpha: 1)
+        return shadow
+    }()
+    
     //private vars
     fileprivate let titleMargin: CGFloat = 10
     fileprivate var titles: [String] = []
-    fileprivate var titleFrames: [CGRect] = []
     fileprivate var menuItems: [CFMenuViewItem] = []
     fileprivate var selectedItem: CFMenuViewItem!
     
@@ -43,17 +48,21 @@ class CFMenuView: UIView {
     public convenience init(titles: [String]) {
         self.init(frame: CGRect.zero)
         self.titles = titles
-        addContentView()
+        addSubview(contentView)
         addMenuItems()
+        self.addSubview(shadow)
     }
     
-    public func sliderMenu(by progress: CGFloat) {
-        let tag = Int(progress)
-        let rate = progress - CGFloat(tag)
-        let currentItem = menuItems[tag]
-        let nextItem = menuItems[tag + 1]
-        currentItem.rate = 1 - rate
-        nextItem.rate = rate
+    public func sliderMenu(by progress: CGFloat, index: Int, translationX: CGFloat) {
+        let fromItem = menuItems[translationX < 0 ? index : index + 1]
+        let toItem = menuItems[translationX < 0 ? index + 1: index]
+        fromItem.rate = translationX < 0 ? 1 - progress : progress
+        toItem.rate = translationX < 0 ? progress : 1 - progress
+    }
+    
+    public func refreshContentOffsetByEndDecelerating(with index: Int) {
+        selectedItem = menuItems[index]
+        resetContentOffset()
     }
     
     //private funcs
@@ -61,10 +70,6 @@ class CFMenuView: UIView {
         super.layoutSubviews()
         print("menuView layoutSubviews")
         calculateFrames()
-    }
-    
-    fileprivate func addContentView() {
-        addSubview(contentView)
     }
     
     fileprivate func addMenuItems() {
@@ -76,25 +81,23 @@ class CFMenuView: UIView {
             contentView.addSubview(item)
             if idx == 0 {
                 selectedItem = item
-                selectedItem.selected = true
+                selectedItem.setMenuItemSelectionState(isSelected: true, animated: false)
             }
+
         }
     }
     
     fileprivate func calculateFrames() {
-        let label = UILabel()
-        titleFrames.removeAll()
-        for (idx, title) in titles.enumerated() {
-            label.text = title
-            let size = label.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude))
+        for (idx, item) in menuItems.enumerated() {
+            let size = item.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude))
             let width = size.width + titleMargin * 2
             let height = size.height
             let titleFrame = CGRect(x: width * CGFloat(idx), y: (frame.height - height) / 2, width: width, height: height)
-            titleFrames.append(titleFrame)
             menuItems[idx].frame = titleFrame
         }
+        shadow.frame = CGRect(x: 0, y: self.bounds.height - 1, width: self.bounds.width, height: 1)
         contentView.frame = self.bounds
-        contentView.contentSize = CGSize(width: titleFrames.last!.maxX, height: frame.height)
+        contentView.contentSize = CGSize(width: menuItems.last!.frame.maxX, height: frame.height)
     }
     
     fileprivate func resetContentOffset() {
@@ -121,8 +124,8 @@ extension CFMenuView: CFMenuViewItemDelegate {
             return
         }
         delegate?.didSelectedItemAtIndex(index: menuItems.index(of: menuItem)!)
-        selectedItem.selectWithAnimation(select: false)
-        menuItem.selectWithAnimation(select: true)
+        menuItem.setMenuItemSelectionState(isSelected: true, animated: true)
+        selectedItem.setMenuItemSelectionState(isSelected: false, animated: true)
         selectedItem = menuItem
         resetContentOffset()
     }
