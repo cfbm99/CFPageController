@@ -10,64 +10,45 @@ import UIKit
 
 class CFPageController: UIViewController {
     
-    //lazy vars
-    fileprivate lazy var scrollView: UIScrollView = {
-        let scroll = UIScrollView()
-        scroll.showsVerticalScrollIndicator = false
-        scroll.showsHorizontalScrollIndicator = false
-        scroll.isPagingEnabled = true
-        scroll.delegate = self
-        return scroll
-    }()
-    
-    fileprivate lazy var menuView: CFMenuView = {
-        let menuView = CFMenuView(titles: self.titles)
-        menuView.delegate = self
-        return menuView
-    }()
-    
     //private vars
-    fileprivate var titles: [String] = []
-    fileprivate var viewControllers: [UIViewController] = []
+    fileprivate lazy var contentView: UIView = {
+        let contentView = UIView()
+        return contentView
+    }()
+    
+    fileprivate lazy var topBar: CFPageTopBar = {
+        let configuration = CateGoryButtonConfiguration()
+        let topBar = CFPageTopBar(cateGoryButtonConfiguration: configuration, delegate: self)
+        return topBar
+    }()
+    
+    fileprivate lazy var pageContentView: CFPageContentView = {
+        let content = CFPageContentView()
+        return content
+    }()
+    
     fileprivate var childVcViewFrames: [CGRect] = []
     fileprivate let menuViewHeight: CGFloat = 44
     fileprivate var currentViewController: UIViewController?
     fileprivate var selectedIndex: Int = 0
     fileprivate var hasInit: Bool = false
     
-    //life cycle
-    public convenience init(viewControllers: [UIViewController], titles: [String]) {
-        self.init()
-        self.viewControllers = viewControllers
-        self.titles = titles
-    }
+    //public vars
+    public var titles: [String] = []
+    public var viewControllers: [UIViewController] = []
     
+    //life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard viewControllers.count == titles.count && viewControllers.count > 0 else {
-            fatalError("viewControllers.count != titles.count or viewControllers.count !> 0")
-        }
+        
         view.backgroundColor = UIColor.white
-        addScrollView()
-        addMenuView()
-        calculateFrames()
-        addViewControllerAtIndex(0)
-        currentViewController = viewControllers[selectedIndex]
-        // Do any additional setup after loading the view.
+        initSubviews()
+        setTitlesAndViewControllers()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        guard viewControllers.count == titles.count && viewControllers.count > 0 else {
-            fatalError("viewControllers.count != titles.count or viewControllers.count !> 0")
-        }
-        guard !hasInit else {
-            return
-        }
-        calculateFrames()
-        currentViewController?.view.frame = childVcViewFrames[selectedIndex]
-        hasInit = true
-        print("did layout subviews")
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -75,67 +56,76 @@ class CFPageController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    //public funcs
+    public func setTitlesAndViewControllers() {
+        let titles = ["推荐", "新品", "众筹", "福利社", "限时购", "居家", "配件", "服装", "电器", "洗护", "饮食", "餐厨"]
+        let vcs = titles.map { (_) -> UIViewController in
+            return ViewController()
+        }
+        
+        self.titles = titles
+        viewControllers = vcs
+        
+        reloadData()
+    }
+    
+    public func reloadData() {
+        topBar.titles = titles
+        pageContentView.reloadViewControllers(parentViewController: self, childViewControllers: viewControllers)
+    }
+    
     //private funcs
-    fileprivate func addScrollView() {
-        view.addSubview(scrollView)
+    fileprivate func initSubviews() {
+        view.addSubview(topBar)
+        view.addSubview(contentView)
+        contentView.addSubview(pageContentView)
+        
+        layoutViews()
     }
     
-    fileprivate func addMenuView() {
-        view.addSubview(menuView)
-    }
-    
-    fileprivate func calculateFrames() {
-        let width = view.bounds.width
-        let height = view.bounds.height - menuViewHeight - 20
-        menuView.frame = CGRect(x: 0, y: 20, width: width, height: menuViewHeight)
-        scrollView.frame = CGRect(x: 0, y: menuViewHeight + 20, width: width, height: height)
-        scrollView.contentSize = CGSize(width: width * CGFloat(viewControllers.count), height: height)
-        childVcViewFrames.removeAll()
-        for index in 0 ..< viewControllers.count {
-            var vcFrame = scrollView.bounds
-            vcFrame.origin.x = CGFloat(index) * width
-            childVcViewFrames.append(vcFrame)
-        }
-    }
-    
-    fileprivate func addViewControllerAtIndex(_ index: Int) {
-        currentViewController = viewControllers[index]
-        if viewControllers[index].isViewLoaded {
-            return
-        }
-        let vc = viewControllers[index]
-        addChildViewController(vc)
-        vc.view.frame = childVcViewFrames[index]
-        scrollView.addSubview(vc.view)
-        vc.didMove(toParentViewController: self)
-    }
-}
-
-extension CFPageController: UIScrollViewDelegate {
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.frame.width) == 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - scrollView.frame.width) || scrollView.contentOffset.x < 0 {
-            return
-        }
-        let progress = scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.frame.width) / scrollView.frame.width
-        let translationX = scrollView.panGestureRecognizer.translation(in: scrollView).x
-        let index = Int(scrollView.contentOffset.x / scrollView.frame.width)
-        menuView.sliderMenu(by: progress, index: index, translationX: translationX)
-    }
-    
-    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        selectedIndex = Int(scrollView.contentOffset.x / scrollView.bounds.width)
-        addViewControllerAtIndex(selectedIndex)
-        menuView.refreshContentOffsetByEndDecelerating(with: selectedIndex)
+    fileprivate func layoutViews() {
+        let rect = UIScreen.main.bounds
+        topBar.frame = CGRect(origin: CGPoint.zero, size: CGSize(width: rect.width, height: 100))
+        contentView.frame = CGRect(x: 0, y: 100, width: rect.width, height: rect.height - 100)
+        pageContentView.frame = contentView.bounds
     }
     
 }
 
-extension CFPageController: CFMenuViewDelegate {
+extension CFPageController : CFPageTopBarDelegate {
     
-    func didSelectedItemAtIndex(index: Int) {
-        selectedIndex = index
-        addViewControllerAtIndex(selectedIndex)
-        scrollView.setContentOffset(CGPoint(x: CGFloat(index) * scrollView.frame.width, y: 0), animated: false)
+    func pageTopBar(_ pageTopBar: CFPageTopBar, didSelectAt index: Int) {
+        pageContentView.scroll(at: index)
     }
+    
+    
 }
+
+//extension CFPageController: UIScrollViewDelegate {
+//
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//        if scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.frame.width) == 0 || scrollView.contentOffset.x > (scrollView.contentSize.width - scrollView.frame.width) || scrollView.contentOffset.x < 0 {
+//            return
+//        }
+//        let progress = scrollView.contentOffset.x.truncatingRemainder(dividingBy: scrollView.frame.width) / scrollView.frame.width
+//        let translationX = scrollView.panGestureRecognizer.translation(in: scrollView).x
+//        let index = Int(scrollView.contentOffset.x / scrollView.frame.width)
+//        menuView.sliderMenu(by: progress, index: index, translationX: translationX)
+//    }
+//
+//    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+//        selectedIndex = Int(scrollView.contentOffset.x / scrollView.bounds.width)
+//        addViewControllerAtIndex(selectedIndex)
+//        menuView.refreshContentOffsetByEndDecelerating(with: selectedIndex)
+//    }
+//
+//}
+//
+//extension CFPageController: CFMenuViewDelegate {
+//
+//    func didSelectedItemAtIndex(index: Int) {
+//        selectedIndex = index
+//        addViewControllerAtIndex(selectedIndex)
+//        scrollView.setContentOffset(CGPoint(x: CGFloat(index) * scrollView.frame.width, y: 0), animated: false)
+//    }
+//}

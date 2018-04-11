@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let pageController = CFPageController(viewControllers: [ViewController(),ViewController(),ViewController(),ViewController(),ViewController(),ViewController(),ViewController(),ViewController(),ViewController(),ViewController()], titles: ["要闻","推荐","视频","四川","成都","体育","科技","娱乐","电影","漫画"])
+        let pageController = CFPageController()
         window?.rootViewController = pageController
         
         return true

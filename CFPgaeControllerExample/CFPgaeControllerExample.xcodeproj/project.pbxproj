@@ -17,6 +17,8 @@
 		1836155A1F4E63A4009DB451 /* CFPgaeControllerExampleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183615591F4E63A4009DB451 /* CFPgaeControllerExampleTests.swift */; };
 		183615651F4E63A4009DB451 /* CFPgaeControllerExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183615641F4E63A4009DB451 /* CFPgaeControllerExampleUITests.swift */; };
 		183EE40D1F4FEE6B00616334 /* CFMenuViewItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 183EE40C1F4FEE6B00616334 /* CFMenuViewItem.swift */; };
+		E8419A48207CB04A0037AFDB /* CFPageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8419A47207CB04A0037AFDB /* CFPageContentView.swift */; };
+		E862EB412074BD6500483AA4 /* CFPageTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = E862EB402074BD6500483AA4 /* CFPageTopBar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,8 @@
 		183615641F4E63A4009DB451 /* CFPgaeControllerExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFPgaeControllerExampleUITests.swift; sourceTree = "<group>"; };
 		183615661F4E63A4009DB451 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		183EE40C1F4FEE6B00616334 /* CFMenuViewItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFMenuViewItem.swift; sourceTree = "<group>"; };
+		E8419A47207CB04A0037AFDB /* CFPageContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFPageContentView.swift; sourceTree = "<group>"; };
+		E862EB402074BD6500483AA4 /* CFPageTopBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CFPageTopBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +88,8 @@
 			isa = PBXGroup;
 			children = (
 				1822C6171F4E6411001A691D /* CFPageController.swift */,
+				E8419A47207CB04A0037AFDB /* CFPageContentView.swift */,
+				E862EB402074BD6500483AA4 /* CFPageTopBar.swift */,
 				1822C61B1F4E7EE9001A691D /* CFMenuView.swift */,
 				183EE40C1F4FEE6B00616334 /* CFMenuViewItem.swift */,
 			);
@@ -210,6 +216,7 @@
 				TargetAttributes = {
 					183615401F4E63A4009DB451 = {
 						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = W7F3KWK7XH;
 						ProvisioningStyle = Automatic;
 					};
 					183615541F4E63A4009DB451 = {
@@ -279,8 +286,10 @@
 				183EE40D1F4FEE6B00616334 /* CFMenuViewItem.swift in Sources */,
 				183615471F4E63A4009DB451 /* ViewController.swift in Sources */,
 				1822C61C1F4E7EE9001A691D /* CFMenuView.swift in Sources */,
+				E862EB412074BD6500483AA4 /* CFPageTopBar.swift in Sources */,
 				183615451F4E63A4009DB451 /* AppDelegate.swift in Sources */,
 				1822C6181F4E6411001A691D /* CFPageController.swift in Sources */,
+				E8419A48207CB04A0037AFDB /* CFPageContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,7 +441,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = W7F3KWK7XH;
 				INFOPLIST_FILE = CFPgaeControllerExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cfdemo.CFPgaeControllerExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -444,7 +455,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = W7F3KWK7XH;
 				INFOPLIST_FILE = CFPgaeControllerExample/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.cfdemo.CFPgaeControllerExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
